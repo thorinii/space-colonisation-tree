@@ -1,4 +1,4 @@
-space-colonisation-tree
+Space Colonisation Tree
 =======================
 
-An attempt at generating a tree by Space Colonisation
+An attempt at generating a tree (the living kind) by Space Colonisation.
