@@ -13,9 +13,6 @@ public class PointCloud implements Iterable<Point> {
 
     private final Set<Point> points = new HashSet<>();
 
-    public PointCloud() {
-    }
-
     @Override
     public Iterator<Point> iterator() {
         return points.iterator();
@@ -38,5 +35,12 @@ public class PointCloud implements Iterable<Point> {
 
     public boolean hasPoints() {
         return !points.isEmpty();
+    }
+
+    @Override
+    public PointCloud clone() {
+        PointCloud cloud = new PointCloud();
+        cloud.points.addAll(points);
+        return cloud;
     }
 }

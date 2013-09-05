@@ -14,12 +14,13 @@ import me.lachlanap.spacecolonisationtree.grow.Tree;
  */
 public class TreeRenderer {
 
-    private static final float POINT_DIAMETER = 4f;
+    private static final float POINT_DIAMETER = 5f;
 
     public void render(Tree tree, Graphics2D graphics, float worldWidth, int imgWidth, int imgHeight) {
         Ellipse2D.Float pointShape = new Ellipse2D.Float(0, 0, POINT_DIAMETER, POINT_DIAMETER);
         Line2D.Float connectorLine = new Line2D.Float(0, 0, 0, 0);
 
+        graphics.setColor(Color.ORANGE);
         for (BranchSegment segment : tree.getSegments()) {
             if (segment.getParent() != null) {
                 BranchSegment parent = segment.getParent();
@@ -29,16 +30,16 @@ public class TreeRenderer {
                 connectorLine.x2 = segment.getPosition().x / worldWidth * imgWidth + imgWidth / 2;
                 connectorLine.y2 = imgHeight - segment.getPosition().y / worldWidth * imgWidth;
 
-                graphics.setColor(Color.ORANGE);
-                graphics.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                graphics.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
                 graphics.draw(connectorLine);
             }
+        }
 
-
+        graphics.setColor(Color.BLACK);
+        for (BranchSegment segment : tree.getSegments()) {
             pointShape.x = segment.getPosition().x / worldWidth * imgWidth + imgWidth / 2 - POINT_DIAMETER / 2;
             pointShape.y = imgHeight - segment.getPosition().y / worldWidth * imgWidth - POINT_DIAMETER / 2;
 
-            graphics.setColor(Color.BLACK);
             graphics.fill(pointShape);
         }
     }

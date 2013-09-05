@@ -13,16 +13,29 @@ import me.lachlanap.spacecolonisationtree.Point;
  */
 public class TreeGrower {
 
-    private static final float SEGMENT_LENGTH = 10f;
-    private static final Point DEFAULT_DIRECTION = new Point(0, SEGMENT_LENGTH);
+    private final float segmentLength;
+    private final Point defaultDirection;
     //
-    private static final float ATTRACTION_DISTANCE = 50;
-    private static final float ATTRACTION_DISTANCE2 = ATTRACTION_DISTANCE * ATTRACTION_DISTANCE;
+    private final float attractionDistance;
+    private final float attractionDistanceSq;
     //
-    private static final float KILL_DISTANCE = 12f;
-    private static final float KILL_DISTANCE2 = KILL_DISTANCE * KILL_DISTANCE;
+    private final float killDistance;
+    private final float killDistanceSq;
     //
-    private static final int MAX_ITERATIONS = 500;
+    private final int maxIterations;
+
+    public TreeGrower(float segmentLength, float attractionDistance, float killDistance, int maxIterations) {
+        this.segmentLength = segmentLength;
+        this.defaultDirection = new Point(0, segmentLength);
+
+        this.attractionDistance = attractionDistance;
+        this.attractionDistanceSq = attractionDistance * attractionDistance;
+
+        this.killDistance = killDistance;
+        this.killDistanceSq = killDistance * killDistance;
+
+        this.maxIterations = maxIterations;
+    }
 
     public Tree grow(PointCloud cloud, Point base) {
         List<BranchSegment> segments = new ArrayList<>();
@@ -32,9 +45,9 @@ public class TreeGrower {
 
         // Build up to reach
         BranchSegment reachingSeg = trunk;
-        while (!cloud.isAnyInReach(reachingSeg.getPosition(), ATTRACTION_DISTANCE)) {
+        while (!cloud.isAnyInReach(reachingSeg.getPosition(), attractionDistance)) {
             BranchSegment child = new BranchSegment(reachingSeg,
-                                                    reachingSeg.getPosition().add(DEFAULT_DIRECTION));
+                                                    reachingSeg.getPosition().add(defaultDirection));
             segments.add(child);
 
             reachingSeg = child;
@@ -43,7 +56,7 @@ public class TreeGrower {
 
         // Grow
         int i;
-        for (i = 0; i < MAX_ITERATIONS && cloud.hasPoints(); i++) {
+        for (i = 0; i < maxIterations && cloud.hasPoints(); i++) {
             //while (cloud.hasPoints()) {
             Map<BranchSegment, Point> grow = new HashMap<>();
             for (Iterator<Point> leafIt = cloud.iterator(); leafIt.hasNext();) {
@@ -57,9 +70,9 @@ public class TreeGrower {
 
                     float dist2 = leaf.dist2(seg.getPosition());
 
-                    if (dist2 > ATTRACTION_DISTANCE2) {
+                    if (dist2 > attractionDistanceSq) {
                         continue;
-                    } else if (dist2 < KILL_DISTANCE2) {
+                    } else if (dist2 < killDistanceSq) {
                         leafIt.remove();
                         break;
                     } else {
@@ -80,13 +93,13 @@ public class TreeGrower {
             }
 
             for (Map.Entry<BranchSegment, Point> e : grow.entrySet()) {
-                Point pos = e.getValue().nor().mul(SEGMENT_LENGTH).add(e.getKey().getPosition());
+                Point pos = e.getValue().nor().mul(segmentLength).add(e.getKey().getPosition());
                 BranchSegment seg = new BranchSegment(e.getKey(), pos);
                 segments.add(seg);
             }
         }
 
-        if (i >= MAX_ITERATIONS)
+        if (i >= maxIterations)
             System.out.println("Terminated due to lack of growth");
         else
             System.out.println("Finished due to all space gone at iteration: " + i);
