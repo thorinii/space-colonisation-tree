@@ -2,6 +2,7 @@ package me.lachlanap.spacecolonisationtree.gui;
 
 import java.io.IOException;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import me.lachlanap.spacecolonisationtree.Point;
 import me.lachlanap.spacecolonisationtree.grow.PointCloud;
 import me.lachlanap.spacecolonisationtree.grow.PointCloudFactory;
@@ -19,7 +20,13 @@ public class Frame extends javax.swing.JFrame {
      */
     public Frame() {
         initComponents();
-        render();
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                render();
+            }
+        });
     }
 
     private void render() {
