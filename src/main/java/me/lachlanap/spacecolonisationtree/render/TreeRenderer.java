@@ -16,7 +16,7 @@ public class TreeRenderer {
 
     private static final float POINT_DIAMETER = 5f;
 
-    public void render(Tree tree, Graphics2D graphics, float worldWidth, int imgWidth, int imgHeight) {
+    public void render(Tree tree, Graphics2D graphics, float worldWidth, int imgWidth) {
         Ellipse2D.Float pointShape = new Ellipse2D.Float(0, 0, POINT_DIAMETER, POINT_DIAMETER);
         Line2D.Float connectorLine = new Line2D.Float(0, 0, 0, 0);
 
@@ -26,9 +26,9 @@ public class TreeRenderer {
                 BranchSegment parent = segment.getParent();
 
                 connectorLine.x1 = parent.getPosition().x / worldWidth * imgWidth + imgWidth / 2;
-                connectorLine.y1 = imgHeight - parent.getPosition().y / worldWidth * imgWidth;
+                connectorLine.y1 = parent.getPosition().y / worldWidth * imgWidth;
                 connectorLine.x2 = segment.getPosition().x / worldWidth * imgWidth + imgWidth / 2;
-                connectorLine.y2 = imgHeight - segment.getPosition().y / worldWidth * imgWidth;
+                connectorLine.y2 = segment.getPosition().y / worldWidth * imgWidth;
 
                 graphics.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
                 graphics.draw(connectorLine);
@@ -38,7 +38,7 @@ public class TreeRenderer {
         graphics.setColor(Color.BLACK);
         for (BranchSegment segment : tree.getSegments()) {
             pointShape.x = segment.getPosition().x / worldWidth * imgWidth + imgWidth / 2 - POINT_DIAMETER / 2;
-            pointShape.y = imgHeight - segment.getPosition().y / worldWidth * imgWidth - POINT_DIAMETER / 2;
+            pointShape.y = segment.getPosition().y / worldWidth * imgWidth - POINT_DIAMETER / 2;
 
             graphics.fill(pointShape);
         }

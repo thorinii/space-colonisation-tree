@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import me.lachlanap.spacecolonisationtree.AABB;
 import me.lachlanap.spacecolonisationtree.Point;
 
 /**
@@ -13,6 +15,7 @@ import me.lachlanap.spacecolonisationtree.Point;
  */
 public class TreeGrower {
 
+    public static final int QUADTREE_EXTENTS = 900;
     private final float segmentLength;
     private final Point defaultDirection;
     //
@@ -22,9 +25,14 @@ public class TreeGrower {
     private final float killDistance;
     private final float killDistanceSq;
     //
+    private final float gravityBias;
+    //
     private final int maxIterations;
+    //
+    private BranchQuadTree quadTree;
 
-    public TreeGrower(float segmentLength, float attractionDistance, float killDistance, int maxIterations) {
+    public TreeGrower(float segmentLength, float attractionDistance, float killDistance, float gravityBias,
+            int maxIterations) {
         this.segmentLength = segmentLength;
         this.defaultDirection = new Point(0, segmentLength);
 
@@ -33,6 +41,8 @@ public class TreeGrower {
 
         this.killDistance = killDistance;
         this.killDistanceSq = killDistance * killDistance;
+
+        this.gravityBias = gravityBias;
 
         this.maxIterations = maxIterations;
     }
@@ -66,43 +76,56 @@ public class TreeGrower {
     }
 
     private int growTree(PointCloud cloud, List<BranchSegment> segments) {
+        quadTree = new BranchQuadTree(new AABB(Point.ZERO, new Point(QUADTREE_EXTENTS, QUADTREE_EXTENTS)));
+        for (BranchSegment seg : segments)
+            quadTree.insert(seg);
+
         int itrCount;
-        for (itrCount = 0; itrCount < maxIterations && cloud.hasPoints(); itrCount++) {
+        boolean changed = true;
+        for (itrCount = 0; itrCount < maxIterations && changed && cloud.hasPoints(); itrCount++) {
+            changed = false;
+
             Map<BranchSegment, Point> grow = new HashMap<>();
-            findGrowList(cloud, segments, grow);
+            findGrowList(cloud, grow);
 
             for (Map.Entry<BranchSegment, Point> e : grow.entrySet()) {
                 Point pos = e.getValue().nor().mul(segmentLength).add(e.getKey().getPosition());
                 BranchSegment seg = new BranchSegment(e.getKey(), pos);
-                segments.add(seg);
+                if (segments.add(seg))
+                    quadTree.insert(seg);
+
+                changed = true;
             }
         }
 
         return itrCount;
     }
 
-    private void findGrowList(PointCloud cloud, List<BranchSegment> segments, Map<BranchSegment, Point> growList) {
+    private void findGrowList(PointCloud cloud, Map<BranchSegment, Point> growList) {
         for (Iterator<Point> leafIt = cloud.iterator(); leafIt.hasNext();) {
             Point leaf = leafIt.next();
-            BranchSegment closest = findClosestToLeaf(segments, leaf, leafIt);
+            BranchSegment closest = findClosestToLeaf(leaf, leafIt);
 
             if (closest != null) {
                 Point dir = growList.get(closest);
                 if (dir == null)
                     dir = new Point(0, 0);
 
+                dir = new Point(dir.x, dir.y + gravityBias);
+
                 growList.put(closest, dir.add(leaf.sub(closest.getPosition())));
             }
         }
     }
 
-    private BranchSegment findClosestToLeaf(List<BranchSegment> segments, Point leaf, Iterator<Point> leafIt) {
+    private BranchSegment findClosestToLeaf(Point leaf, Iterator<Point> leafIt) {
         BranchSegment closest = null;
         float closestDist2 = Float.MAX_VALUE;
 
-        for (Iterator<BranchSegment> branchIt = segments.iterator(); branchIt.hasNext();) {
-            BranchSegment seg = branchIt.next();
+        Set<BranchSegment> inRange = quadTree.getInRange(new AABB(leaf, new Point(attractionDistance,
+                                                                                  attractionDistance)));
 
+        for (BranchSegment seg : inRange) {
             float dist2 = leaf.dist2(seg.getPosition());
 
             if (dist2 > attractionDistanceSq) {
@@ -118,5 +141,9 @@ public class TreeGrower {
             }
         }
         return closest;
+    }
+
+    public BranchQuadTree getQuadTree() {
+        return quadTree;
     }
 }

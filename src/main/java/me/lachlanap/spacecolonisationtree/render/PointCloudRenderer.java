@@ -14,13 +14,13 @@ public class PointCloudRenderer {
 
     private static final float POINT_DIAMETER = 10f;
 
-    public void render(PointCloud cloud, Graphics2D graphics, float worldWidth, int imgWidth, int imgHeight) {
+    public void render(PointCloud cloud, Graphics2D graphics, float worldWidth, int imgWidth) {
         Ellipse2D.Float pointShape = new Ellipse2D.Float(0, 0, POINT_DIAMETER, POINT_DIAMETER);
 
         graphics.setColor(new Color(0, 255, 0, 64));
         for (Point point : cloud) {
             pointShape.x = point.x / worldWidth * imgWidth + imgWidth / 2 - POINT_DIAMETER / 2;
-            pointShape.y = imgHeight - point.y / worldWidth * imgWidth - POINT_DIAMETER / 2;
+            pointShape.y = point.y / worldWidth * imgWidth - POINT_DIAMETER / 2;
 
             graphics.fill(pointShape);
         }

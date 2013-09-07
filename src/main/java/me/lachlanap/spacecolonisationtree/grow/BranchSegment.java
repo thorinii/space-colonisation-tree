@@ -43,4 +43,9 @@ public class BranchSegment {
             return false;
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "BranchSegment{" + "position=" + position + '}';
+    }
 }

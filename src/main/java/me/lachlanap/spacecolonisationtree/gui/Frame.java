@@ -37,19 +37,28 @@ public class Frame extends javax.swing.JFrame {
         int height = (int) pointCloudHeight.getValue();
 
         PointCloudFactory factory = new PointCloudFactory(seed);
-        PointCloud cloud = factory.makeSpherical(count, radius, (float) xScale / 10f, new Point(0, height));
+        PointCloud cloud = factory.makeSpherical(count,
+                                                 radius,
+                                                 (float) xScale / 10f,
+                                                 new Point(0, height));
         treeRenderPanel1.setPointCloud(cloud);
 
 
         int segmentLength = (int) treeSegmentLength.getValue();
         int attractionDistance = (int) treeAttractionDistance.getValue();
         int killDistance = (int) treeKillDistance.getValue();
+        int gravityBias = (int) treeGravityBias.getValue();
         int maxIterations = (int) treeMaxIterations.getValue();
 
-        TreeGrower grower = new TreeGrower(segmentLength, attractionDistance, killDistance, maxIterations);
+        TreeGrower grower = new TreeGrower(segmentLength,
+                                           attractionDistance,
+                                           killDistance,
+                                           gravityBias / 10f,
+                                           maxIterations);
         Tree grown = grower.grow(cloud.clone(), new Point(0, 10));
 
         treeRenderPanel1.setTree(grown);
+        treeRenderPanel1.setQuadTree(grower.getQuadTree());
     }
 
     /**
@@ -86,6 +95,8 @@ public class Frame extends javax.swing.JFrame {
         treeAttractionDistance = new javax.swing.JSpinner();
         jLabel8 = new javax.swing.JLabel();
         treeSegmentLength = new javax.swing.JSpinner();
+        jLabel10 = new javax.swing.JLabel();
+        treeGravityBias = new javax.swing.JSpinner();
         saveImageBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -223,7 +234,7 @@ public class Frame extends javax.swing.JFrame {
         jLabel5.setText("Max Iterations:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel3.add(jLabel5, gridBagConstraints);
@@ -236,17 +247,17 @@ public class Frame extends javax.swing.JFrame {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 0.2;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel3.add(treeMaxIterations, gridBagConstraints);
 
-        jLabel6.setText("Kill Distance:");
+        jLabel6.setText("Gravity Bias (*10):");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel3.add(jLabel6, gridBagConstraints);
@@ -311,6 +322,29 @@ public class Frame extends javax.swing.JFrame {
         gridBagConstraints.weightx = 0.2;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         jPanel3.add(treeSegmentLength, gridBagConstraints);
+
+        jLabel10.setText("Kill Distance:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel3.add(jLabel10, gridBagConstraints);
+
+        treeGravityBias.setModel(new javax.swing.SpinnerNumberModel(0, -200, 200, 1));
+        treeGravityBias.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                sliderChangedEvent(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 0.2;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel3.add(treeGravityBias, gridBagConstraints);
 
         saveImageBtn.setText("Save Image");
         saveImageBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -403,6 +437,7 @@ public class Frame extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -422,6 +457,7 @@ public class Frame extends javax.swing.JFrame {
     private javax.swing.JSpinner pointCloudXScale;
     private javax.swing.JButton saveImageBtn;
     private javax.swing.JSpinner treeAttractionDistance;
+    private javax.swing.JSpinner treeGravityBias;
     private javax.swing.JSpinner treeKillDistance;
     private javax.swing.JSpinner treeMaxIterations;
     private me.lachlanap.spacecolonisationtree.gui.TreeRenderPanel treeRenderPanel1;

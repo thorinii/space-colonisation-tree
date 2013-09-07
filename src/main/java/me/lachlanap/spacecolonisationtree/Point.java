@@ -6,6 +6,7 @@ package me.lachlanap.spacecolonisationtree;
  */
 public class Point {
 
+    public static final Point ZERO = new Point(0, 0);
     public final float x, y;
 
     public Point(float x, float y) {
@@ -15,6 +16,10 @@ public class Point {
 
     public Point add(Point o) {
         return new Point(x + o.x, y + o.y);
+    }
+
+    public Point add(float ox, float oy) {
+        return new Point(x + ox, y + oy);
     }
 
     public Point sub(Point o) {
