@@ -1,13 +1,12 @@
 package me.lachlanap.spacecolonisationtree.gui;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import me.lachlanap.spacecolonisationtree.Point;
-import me.lachlanap.spacecolonisationtree.grow.PointCloud;
-import me.lachlanap.spacecolonisationtree.grow.PointCloudFactory;
-import me.lachlanap.spacecolonisationtree.grow.Tree;
-import me.lachlanap.spacecolonisationtree.grow.TreeGrower;
+import me.lachlanap.spacecolonisationtree.grow.*;
 
 /**
  *
@@ -29,7 +28,11 @@ public class Frame extends javax.swing.JFrame {
         });
     }
 
-    private void render() {
+    public void render() {
+        render(false);
+    }
+
+    public void render(boolean fast) {
         int seed = (int) pointCloudSeed.getValue();
         int count = (int) pointCloudCount.getValue();
         int radius = (int) pointCloudRadius.getValue();
@@ -50,14 +53,19 @@ public class Frame extends javax.swing.JFrame {
         int gravityBias = (int) treeGravityBias.getValue();
         int maxIterations = (int) treeMaxIterations.getValue();
 
+        List<java.awt.Point> basePoints = treeRenderPanel1.getBases();
+        List<Point> bases = new ArrayList<>();
+        for (java.awt.Point p : basePoints)
+            bases.add(new Point(p.x, p.y));
+
         TreeGrower grower = new TreeGrower(segmentLength,
                                            attractionDistance,
                                            killDistance,
                                            gravityBias / 10f,
-                                           maxIterations);
-        Tree grown = grower.grow(cloud.clone(), new Point(0, 10));
+                                           fast ? 30 : maxIterations);
+        World world = grower.grow(cloud.clone(), bases);
 
-        treeRenderPanel1.setTree(grown);
+        treeRenderPanel1.setWorld(world);
         treeRenderPanel1.setQuadTree(grower.getQuadTree());
     }
 
@@ -106,11 +114,11 @@ public class Frame extends javax.swing.JFrame {
         treeRenderPanel1.setLayout(treeRenderPanel1Layout);
         treeRenderPanel1Layout.setHorizontalGroup(
             treeRenderPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 311, Short.MAX_VALUE)
+            .addGap(0, 576, Short.MAX_VALUE)
         );
         treeRenderPanel1Layout.setVerticalGroup(
             treeRenderPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 436, Short.MAX_VALUE)
+            .addGap(0, 662, Short.MAX_VALUE)
         );
 
         jSplitPane1.setRightComponent(treeRenderPanel1);
@@ -378,11 +386,11 @@ public class Frame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane1)
+            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 864, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 436, Short.MAX_VALUE)
+            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 662, Short.MAX_VALUE)
         );
 
         pack();
@@ -407,7 +415,8 @@ public class Frame extends javax.swing.JFrame {
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default
+         * look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {

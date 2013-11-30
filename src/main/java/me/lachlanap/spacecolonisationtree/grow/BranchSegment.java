@@ -11,10 +11,12 @@ public class BranchSegment {
 
     private final BranchSegment parent;
     private final Point position;
+    private final int id;
 
-    public BranchSegment(BranchSegment parent, Point position) {
+    public BranchSegment(BranchSegment parent, Point position, int id) {
         this.parent = parent;
         this.position = position;
+        this.id = id;
     }
 
     public BranchSegment getParent() {
@@ -24,6 +26,11 @@ public class BranchSegment {
     public Point getPosition() {
         return position;
     }
+
+    public int getID() {
+        return id;
+    }
+
 
     @Override
     public int hashCode() {

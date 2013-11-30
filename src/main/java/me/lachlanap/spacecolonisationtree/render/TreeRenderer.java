@@ -14,13 +14,17 @@ import me.lachlanap.spacecolonisationtree.grow.Tree;
  */
 public class TreeRenderer {
 
-    private static final float POINT_DIAMETER = 5f;
+    private static final float POINT_DIAMETER = 4f;
 
-    public void render(Tree tree, Graphics2D graphics, float worldWidth, int imgWidth) {
+    private static final Color[] SEGMENT_COLOURS = {
+        Color.RED, Color.ORANGE, Color.GREEN, Color.MAGENTA
+    };
+
+    public void render(Tree tree, Graphics2D graphics, float worldWidth, int imgWidth, int id) {
         Ellipse2D.Float pointShape = new Ellipse2D.Float(0, 0, POINT_DIAMETER, POINT_DIAMETER);
         Line2D.Float connectorLine = new Line2D.Float(0, 0, 0, 0);
 
-        graphics.setColor(Color.ORANGE);
+        graphics.setColor(SEGMENT_COLOURS[id % SEGMENT_COLOURS.length]);
         for (BranchSegment segment : tree.getSegments()) {
             if (segment.getParent() != null) {
                 BranchSegment parent = segment.getParent();
