@@ -22,6 +22,10 @@ public class PointCloud implements Iterable<Point> {
         points.add(p);
     }
 
+    public void addCloud(PointCloud cloud) {
+        points.addAll(cloud.points);
+    }
+
     public boolean isAnyInReach(Point reach, float distance) {
         float d2 = distance * distance;
 

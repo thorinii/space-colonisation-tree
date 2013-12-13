@@ -40,10 +40,10 @@ public class Frame extends javax.swing.JFrame {
         int height = (int) pointCloudHeight.getValue();
 
         PointCloudFactory factory = new PointCloudFactory(seed);
-        PointCloud cloud = factory.makeSpherical(count,
-                                                 radius,
-                                                 (float) xScale / 10f,
-                                                 new Point(0, height));
+        PointCloud cloud = factory.makeTreeish(count,
+                                               radius,
+                                               (float) xScale / 10f,
+                                               new Point(0, height));
         treeRenderPanel1.setPointCloud(cloud);
 
 
